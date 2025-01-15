@@ -1,56 +1,98 @@
-File Upload Application
-This project provides a simple Python Flask application that allows users to upload files to an AWS S3 bucket. Upon upload, AWS services trigger a series of events:
+# File Upload Application
 
-The file is uploaded to an S3 bucket.
-The S3 bucket triggers an SQS message.
-The SQS message triggers a Lambda function.
-The Lambda function extracts metadata from the file and stores it in DynamoDB.
-Features
-File upload to AWS S3 using Boto3.
-AWS Lambda integration to extract metadata from files.
-Automatic storage of metadata in DynamoDB.
-Fully containerized Docker application.
-Docker Setup
-To get the application running with Docker, follow these steps:
+A Python Flask application that enables file uploads to AWS S3 with automated metadata extraction and storage using AWS services (S3, SQS, Lambda, and DynamoDB).
 
-1. Create a .env File
-Create a .env file in the project root directory and add the following AWS configuration. Replace the values with your own AWS credentials.
+## Features
 
-env
-Copy code
+- File upload to AWS S3 using Boto3
+- AWS Lambda integration to extract metadata from files
+- Automatic storage of metadata in DynamoDB
+- Fully containerized Docker application
+
+## Architecture Flow
+
+1. User uploads file through web interface
+2. File is stored in AWS S3 bucket
+3. S3 bucket triggers an SQS message
+4. SQS message triggers Lambda function
+5. Lambda function extracts metadata and stores it in DynamoDB
+
+## Prerequisites
+
+- Docker installed on your machine
+- AWS account with necessary services configured:
+  - S3 bucket
+  - SQS queue configured to listen for S3 events
+  - Lambda function for metadata processing
+  - DynamoDB table for metadata storage
+- AWS credentials (Access Key & Secret Key)
+
+## Docker Setup
+
+### 1. Create Environment File
+
+Create a `.env` file in the project root directory with your AWS configuration:
+
+```
 # AWS S3 Configuration
-AWS_S3_BUCKET_NAME = 'your-s3-bucket-name'
-AWS_REGION = 'your-aws-region'
-AWS_ACCESS_KEY = 'your-aws-access-key'
-AWS_SECRET_KEY = 'your-aws-secret-key'
-2. Build the Docker Image
-In the terminal, navigate to the project directory where the Dockerfile is located and run the following command to build the Docker image:
+AWS_S3_BUCKET_NAME=your-s3-bucket-name
+AWS_REGION=your-aws-region
+AWS_ACCESS_KEY=your-aws-access-key
+AWS_SECRET_KEY=your-aws-secret-key
+```
 
-bash
-Copy code
+### 2. Build Docker Image
+
+Navigate to the project directory and build the Docker image:
+
+```bash
 docker build -t file-upload-app .
-3. Run the Docker Container
-After building the Docker image, run the container using this command:
+```
 
-bash
-Copy code
+### 3. Run Docker Container
+
+Start the container:
+
+```bash
 docker run -p 5000:5000 file-upload-app
-The application will now be accessible at http://localhost:5000 in your browser.
+```
 
-How It Works
-The user selects a file to upload via the web interface.
-The file is uploaded to the specified S3 bucket.
-An SQS message is triggered by the S3 upload event.
-The SQS message is received by a Lambda function.
-The Lambda function extracts metadata from the uploaded file and stores it in DynamoDB.
-AWS Configuration
-Ensure the following AWS services are properly configured in your AWS account:
+The application will be accessible at `http://localhost:5000`
 
-S3 Bucket: Create an S3 bucket and specify the name in your .env file.
-SQS Queue: Set up an SQS queue to listen for S3 events.
-Lambda Function: Create a Lambda function to process the file metadata.
-DynamoDB: Create a DynamoDB table to store the metadata.
-Notes
-Make sure you have your AWS credentials (Access Key & Secret Key) correctly set up in the .env file.
-The Docker container includes all dependencies for running the Flask app, so no need to install anything locally.
+## AWS Service Configuration Requirements
 
+### S3 Bucket
+- Create a new S3 bucket
+- Configure appropriate permissions
+- Update bucket name in `.env` file
+
+### SQS Queue
+- Set up queue to receive S3 events
+- Configure necessary IAM roles and policies
+
+### Lambda Function
+- Create function to process metadata
+- Configure SQS trigger
+- Set up appropriate IAM roles
+
+### DynamoDB
+- Create table for metadata storage
+- Configure appropriate access permissions
+
+## Notes
+
+- All required dependencies are included in the Docker container
+- No local installation required beyond Docker
+- Ensure proper AWS credentials are set in the `.env` file
+- Make sure all AWS services are properly configured before running the application
+
+## Security Considerations
+
+- Keep your AWS credentials secure and never commit them to version control
+- Use appropriate IAM roles and permissions
+- Regularly rotate AWS access keys
+- Implement proper error handling for failed uploads
+
+## Support
+
+For issues and feature requests, please create an issue in the repository.
