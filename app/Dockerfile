@@ -1,21 +1,21 @@
-# Use the official Python base image
+# Use an official Python runtime as a base image
 FROM python:3.9-slim
 
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the application files
-COPY . /app
+# Copy the requirements.txt file to the container
+COPY requirements.txt .
 
-# Install dependencies
+# Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the .env file to the container (optional if users will provide it directly)
-COPY .env /app/.env
+# Copy the application code and .env file into the container
+COPY . .
 
-# Expose port
+# Expose the port the app will run on
 EXPOSE 5000
 
-# Run the Flask app
-CMD ["python", "upload-s3.py"]
+# Run the Flask app (this will use the .env file for configuration)
+CMD ["python", "app.py"]
 
